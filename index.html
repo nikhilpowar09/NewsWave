@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NewsWave — Live news from India and around the world" />
+  <title>NewsWave — Live News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Reading Progress Bar -->
+  <div id="reading-progress"></div>
+
+  <!-- Breaking News Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker-label">🔴 LIVE</div>
+    <div class="ticker-track">
+      <div id="ticker-content" class="ticker-content"></div>
+    </div>
+  </div>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo" onclick="navigate('home');return false">
+        <span class="logo-icon">📡</span>
+        <span class="logo-text">News<span class="logo-accent">Wave</span></span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#" class="nav-link active" data-cat="home">Home</a></li>
+        <li><a href="#" class="nav-link" data-cat="india">🇮🇳 India</a></li>
+        <li><a href="#" class="nav-link" data-cat="world">World</a></li>
+        <li><a href="#" class="nav-link" data-cat="technology">Tech</a></li>
+        <li><a href="#" class="nav-link" data-cat="sports">Sports</a></li>
+        <li><a href="#" class="nav-link" data-cat="entertainment">Entertainment</a></li>
+        <li><a href="#" class="nav-link" data-cat="business">Business</a></li>
+        <li><a href="#" class="nav-link" data-cat="health">Health</a></li>
+        <li><a href="#" class="nav-link" data-cat="about">About</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="search-box" id="search-box">
+          <input type="text" id="search-input" placeholder="Search news…" autocomplete="off" aria-label="Search" />
+          <button class="search-btn" id="search-btn" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+          <div id="search-suggestions" class="search-suggestions" role="listbox"></div>
+        </div>
+
+        <button class="icon-btn" id="bookmark-nav-btn" title="Bookmarks" onclick="navigate('bookmarks')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span class="badge" id="bookmark-badge"></span>
+        </button>
+
+        <button class="icon-btn" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ ARTICLE READER PANEL (in-page) ══ -->
+  <div id="article-reader" class="article-reader" role="dialog" aria-modal="true" aria-label="Article reader">
+    <div class="reader-toolbar">
+      <button class="reader-back-btn" onclick="closeReader()" aria-label="Go back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Back
+      </button>
+      <div class="reader-toolbar-right">
+        <button class="reader-toolbar-btn" id="reader-like-btn" onclick="readerLike()" title="Like">🤍 Like</button>
+        <button class="reader-toolbar-btn" id="reader-bm-btn" onclick="readerBookmark()" title="Save">📌 Save</button>
+        <button class="reader-toolbar-btn" onclick="readerShare()" title="Share">📤 Share</button>
+      </div>
+    </div>
+    <div class="reader-scroll-area">
+      <div id="reader-content" class="reader-content"></div>
+    </div>
+  </div>
+  <!-- Reader backdrop -->
+  <div class="reader-backdrop" id="reader-backdrop" onclick="closeReader()"></div>
+
+  <!-- ══ MAIN APP ══ -->
+  <main id="app">
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <section class="hero-section">
+        <div class="hero-carousel" id="hero-carousel">
+          <div class="carousel-track" id="carousel-track">
+            <!-- Skeleton placeholder while loading -->
+            <div class="carousel-slide carousel-skeleton-slide">
+              <div class="carousel-skeleton-bg"></div>
+              <div class="carousel-content">
+                <div class="carousel-skel-line" style="width:100px;height:22px;margin-bottom:12px"></div>
+                <div class="carousel-skel-line" style="width:80%;height:32px;margin-bottom:8px"></div>
+                <div class="carousel-skel-line" style="width:55%;height:18px"></div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-btn prev" id="carousel-prev" aria-label="Previous slide">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="carousel-btn next" id="carousel-next" aria-label="Next slide">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <div class="carousel-dots" id="carousel-dots"></div>
+        </div>
+      </section>
+
+      <div class="container">
+        <div class="home-layout">
+          <div class="main-feed">
+            <section class="section-block">
+              <div class="section-header">
+                <h2 class="section-title">🇮🇳 India News</h2>
+                <button class="see-all-btn" onclick="navigate('india')">See All →</button>
+              </div>
+              <div class="news-grid" id="india-grid"></div>
+            </section>
+
+            <section class="section-block">
+              <div class="section-header">
+                <h2 class="section-title">🌍 World News</h2>
+                <button class="see-all-btn" onclick="navigate('world')">See All →</button>
+              </div>
+              <div class="news-grid" id="world-grid"></div>
+            </section>
+
+            <section class="section-block">
+              <div class="section-header">
+                <h2 class="section-title">💻 Technology</h2>
+                <button class="see-all-btn" onclick="navigate('technology')">See All →</button>
+              </div>
+              <div class="news-grid" id="tech-grid"></div>
+            </section>
+          </div>
+
+          <aside class="sidebar">
+            <div class="sidebar-widget">
+              <h3 class="widget-title">🔥 Trending Now</h3>
+              <div id="trending-list"></div>
+            </div>
+            <div class="sidebar-widget weather-widget" id="weather-widget">
+              <h3 class="widget-title">🌤 Weather</h3>
+              <div id="weather-content"><div class="weather-loading">Detecting location…</div></div>
+            </div>
+            <div class="sidebar-widget">
+              <h3 class="widget-title">🔖 Saved Articles</h3>
+              <div id="sidebar-bookmarks"><p class="sb-empty">No saved articles yet.</p></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY PAGE -->
+    <div id="page-category" class="page">
+      <div class="container">
+        <div class="page-header">
+          <h1 id="category-title" class="page-title"></h1>
+          <div class="filter-bar">
+            <label for="sort-select" class="sr-only">Sort by</label>
+            <select id="sort-select" class="filter-select">
+              <option value="publishedAt">📅 Latest</option>
+              <option value="relevancy">🎯 Relevancy</option>
+              <option value="popularity">🔥 Popular</option>
+            </select>
+          </div>
+        </div>
+        <div class="news-grid-large" id="category-grid"></div>
+        <div id="category-pagination" class="pagination"></div>
+      </div>
+    </div>
+
+    <!-- SEARCH PAGE -->
+    <div id="page-search" class="page">
+      <div class="container">
+        <div class="search-page-header">
+          <h1 class="page-title">🔍 Search Results</h1>
+          <p id="search-result-info" class="result-info"></p>
+        </div>
+        <div class="news-grid-large" id="search-grid"></div>
+        <div id="search-pagination" class="pagination"></div>
+      </div>
+    </div>
+
+    <!-- BOOKMARKS PAGE -->
+    <div id="page-bookmarks" class="page">
+      <div class="container">
+        <h1 class="page-title">🔖 Saved Articles</h1>
+        <div class="news-grid-large" id="bookmarks-grid"></div>
+        <div id="bookmarks-empty" class="empty-state" style="display:none">
+          <div class="empty-icon">📭</div>
+          <h3>No saved articles yet</h3>
+          <p>Click the 📌 Save button on any article to bookmark it here.</p>
+          <button class="btn-primary" onclick="navigate('home')" style="margin-top:1.5rem">Browse News →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div id="page-about" class="page">
+      <div class="container">
+        <div class="static-page">
+          <h1 class="page-title">About NewsWave</h1>
+          <div class="about-hero">
+            <span class="about-icon">📡</span>
+            <h2>Bringing you the world's stories</h2>
+            <p>NewsWave aggregates live news from 150,000+ sources worldwide. Stay informed about India, the world, technology, sports, entertainment, and more — all in one place, with an in-page reader so you never lose your place.</p>
+          </div>
+          <div class="about-grid">
+            <div class="about-card"><div class="about-card-icon">🇮🇳</div><h3>India Coverage</h3><p>Dedicated Indian news powered by a specialized India API — national, state, business, sports, and entertainment.</p></div>
+            <div class="about-card"><div class="about-card-icon">🌍</div><h3>Global Reach</h3><p>International news from BBC, Reuters, AP, The Guardian and thousands more sources across 54 countries.</p></div>
+            <div class="about-card"><div class="about-card-icon">📖</div><h3>In-Page Reader</h3><p>Read articles without leaving the site. Click any story to open our smooth reader panel with full controls.</p></div>
+            <div class="about-card"><div class="about-card-icon">🔖</div><h3>Save & Organize</h3><p>Bookmark articles and like stories — all stored locally in your browser. Your reading list, always available.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div id="page-contact" class="page">
+      <div class="container">
+        <div class="static-page">
+          <h1 class="page-title">Contact Us</h1>
+          <div class="contact-layout">
+            <div class="contact-info">
+              <h2>Get in Touch</h2>
+              <p>Have feedback, suggestions, or found a bug? We'd love to hear from you.</p>
+              <div class="contact-items">
+                <div class="contact-item"><span>📧</span><span>hello@newswave.app</span></div>
+                <div class="contact-item"><span>🐦</span><span>@NewsWaveApp</span></div>
+                <div class="contact-item"><span>📍</span><span>Mumbai, India</span></div>
+              </div>
+            </div>
+            <form class="contact-form" onsubmit="handleContactForm(event)">
+              <div class="form-group"><label>Name</label><input type="text" placeholder="Your name" required /></div>
+              <div class="form-group"><label>Email</label><input type="email" placeholder="your@email.com" required /></div>
+              <div class="form-group"><label>Message</label><textarea rows="5" placeholder="Your message…" required></textarea></div>
+              <button type="submit" class="btn-primary">Send Message ✉️</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 404 PAGE -->
+    <div id="page-404" class="page">
+      <div class="container">
+        <div class="error-page">
+          <div class="error-code">404</div>
+          <h2>Page not found</h2>
+          <p>The page you're looking for doesn't exist.</p>
+          <button class="btn-primary" onclick="navigate('home')">← Back to Home</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo" style="margin-bottom:.75rem">
+            <span class="logo-icon">📡</span>
+            <span class="logo-text">News<span class="logo-accent">Wave</span></span>
+          </div>
+          <p>Live news from India and around the world. Powered by News API.</p>
+          <div class="social-links" style="margin-top:1rem">
+  <a href="https://github.com/nikhilpowar09" class="social-link" target="_blank" title="Twitter / X">
+    <i class="fa-brands fa-x-twitter"></i>
+  </a>
+
+  <a href="https://www.facebook.com/profile.php?id=61571473962220" class="social-link" target="_blank" title="Facebook">
+    <i class="fa-brands fa-facebook-f"></i>
+  </a>
+
+  <a href="https://www.instagram.com/swamisamarthparivaar/" class="social-link" target="_blank" title="Instagram">
+    <i class="fa-brands fa-instagram"></i>
+  </a>
+
+  <a href="youtube.com/@jaymaharashtrachowk?si=NbR312A3m-xFlmvc" class="social-link"  target="_blank" title="YouTube">
+    <i class="fa-brands fa-youtube"></i>
+  </a>
+</div>
+         
+        </div>
+        <div class="footer-col">
+          <h4>News</h4>
+          <ul>
+            <li><a href="#" onclick="navigate('india');return false">🇮🇳 India News</a></li>
+            <li><a href="#" onclick="navigate('world');return false">🌍 World</a></li>
+            <li><a href="#" onclick="navigate('technology');return false">💻 Technology</a></li>
+            <li><a href="#" onclick="navigate('sports');return false">🏆 Sports</a></li>
+            <li><a href="#" onclick="navigate('business');return false">📈 Business</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>More</h4>
+          <ul>
+            <li><a href="#" onclick="navigate('entertainment');return false">🎬 Entertainment</a></li>
+            <li><a href="#" onclick="navigate('health');return false">❤️ Health</a></li>
+            <li><a href="#" onclick="navigate('science');return false">🔬 Science</a></li>
+            <li><a href="#" onclick="navigate('bookmarks');return false">🔖 Bookmarks</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#" onclick="navigate('about');return false">About Us</a></li>
+            <li><a href="#" onclick="navigate('contact');return false">Contact</a></li>
+            <li><a href="https://newsapi.org" target="_blank" rel="noopener">News API</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 NewsWave. All rights reserved. Powered by Mr.Nikhil Powar <a href="https://newsapi.org" target="_blank" rel="noopener">News API</a>.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to top -->
+  <button id="scroll-top" class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Scroll to top" aria-label="Scroll to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Theme panel -->
+  <div id="theme-panel" class="theme-panel" role="dialog" aria-label="Theme settings">
+    <div class="theme-panel-header">
+      <h4>Appearance</h4>
+      <button onclick="closeThemePanel()" aria-label="Close">✕</button>
+    </div>
+    <div class="theme-options">
+      <button class="theme-opt active" data-theme="light" onclick="setTheme('light')">☀️ Light</button>
+      <button class="theme-opt" data-theme="dark" onclick="setTheme('dark')">🌙 Dark</button>
+      <button class="theme-opt" data-theme="sepia" onclick="setTheme('sepia')">📜 Sepia</button>
+    </div>
+    <div class="accent-options">
+      <p>Accent Color</p>
+      <div class="accent-swatches">
+        <button class="swatch active" style="background:#6366f1" data-color="#6366f1" data-dark="#4f46e5" onclick="setAccent('#6366f1','#4f46e5')" title="Indigo"></button>
+        <button class="swatch" style="background:#ef4444" data-color="#ef4444" data-dark="#dc2626" onclick="setAccent('#ef4444','#dc2626')" title="Red"></button>
+        <button class="swatch" style="background:#10b981" data-color="#10b981" data-dark="#059669" onclick="setAccent('#10b981','#059669')" title="Green"></button>
+        <button class="swatch" style="background:#f59e0b" data-color="#f59e0b" data-dark="#d97706" onclick="setAccent('#f59e0b','#d97706')" title="Amber"></button>
+        <button class="swatch" style="background:#3b82f6" data-color="#3b82f6" data-dark="#2563eb" onclick="setAccent('#3b82f6','#2563eb')" title="Blue"></button>
+        <button class="swatch" style="background:#ec4899" data-color="#ec4899" data-dark="#db2777" onclick="setAccent('#ec4899','#db2777')" title="Pink"></button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
