@@ -5,10 +5,12 @@ const BASE        = import.meta.env.VITE_NEWS_API_BASE || 'https://newsapi.org/'
 
 async function fetchNews(url) {
   const res = await fetch(url);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.status === 'error') {
-    throw new Error(data.message || `HTTP ${res.status}`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to fetch");
   }
+
   return data;
 }
 
